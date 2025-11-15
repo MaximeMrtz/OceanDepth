@@ -4,7 +4,7 @@
 
 ## C'est quoi ce projet ?
 
-C'est un jeu d'exploration sous-marine en C que j'ai codé pour m'entraîner et m'amuser. On explore une carte, on affronte des créatures, on gère son inventaire, on fait des quêtes, etc.
+C'est un jeu d'exploration sous-marine en C . On explore une carte, on affronte des créatures, on gère son inventaire, on fait des quêtes, etc.
 
 ## Les exécutables
 
