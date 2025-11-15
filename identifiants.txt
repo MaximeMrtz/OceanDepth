@@ -1,0 +1,4 @@
+Groupe: XX
+---
+NOM Prénom
+NOM Prénom

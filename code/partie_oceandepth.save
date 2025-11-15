@@ -1,0 +1,40 @@
+OCEANDEPTH_SAVE_V2
+JOUEUR_INFO:oklp::15/11/2025:0:0
+PLONGEUR:100:100:100:100:0:0:1:0
+DECOUVERTES:1
+ZONE:0:0:0:0:1:1:0:Base Sous-Marine
+ZONE:1:0:6:0:0:1:0:Zone Vide
+ZONE:2:0:6:0:0:0:0:Zone Vide
+ZONE:3:0:0:0:0:1:0:Base Sous-Marine
+ZONE:0:1:4:50:0:1:1:Champ de Méduses
+ZONE:1:1:3:50:0:0:3:Faille Lumineuse
+ZONE:2:1:3:50:0:0:2:Dôme Obscur
+ZONE:3:1:2:50:0:0:3:Champ de Méduses
+ZONE:0:2:3:150:0:0:3:Forêt d'Algues
+ZONE:1:2:5:150:0:0:3:Épave Engloutie
+ZONE:2:2:2:150:0:0:2:Grottes Marines
+ZONE:3:2:3:150:0:0:1:Champ de Méduses
+ZONE:0:3:1:300:0:0:2:Champ de Méduses
+ZONE:1:3:5:300:0:0:2:Champ de Méduses
+ZONE:2:3:5:300:0:0:3:Forêt d'Algues
+ZONE:3:3:3:300:0:0:1:Plateau Sableux
+INVENTAIRE_START
+-1 -1 0
+1  0 0 0 0 0 0 0 33 0 -1
+1  0 0 -16880 7 39 0 -841515198 32765 0 -1
+1  0 0 0 0 0 0 0 0 0 -1
+1  0 0 0 0 0 0 0 0 0 -1
+1  0 0 0 0 0 0 0 0 0 -1
+1  0 0 0 0 0 0 0 0 0 -1
+1  0 0 0 0 0 0 0 0 0 -1
+1  0 0 0 0 0 0 0 0 0 -1
+INVENTAIRE_END
+QUETES_START
+0 0
+0 1 50 100 0 2
+1 0 100 200 0 1
+2 0 150 300 0 3
+3 0 200 500 0 1
+4 0 300 750 0 1
+5 0 500 1000 0 1
+QUETES_END
