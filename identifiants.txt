@@ -1,4 +1,3 @@
 Groupe: XX
 ---
-NOM Prénom
-NOM Prénom
+MARTINEZ Maxime
