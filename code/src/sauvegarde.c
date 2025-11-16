@@ -1,4 +1,4 @@
-// Fonctions pour sauvegarder et charger la partie (j'ai déplacé ça depuis carte.c)
+// Fonctions pour sauvegarder et charger la partie (j'ai deplace ca depuis carte.c)
 
 // Inclusions standards
 #include <stdio.h>
@@ -16,26 +16,26 @@ void sauvegarder_partie_complete(CarteOceanique *carte, Plongeur *joueur, Creatu
 	// J'ouvre le fichier de sauvegarde
 	FILE *fichier = fopen("partie_oceandepth.save", "w");
 	if (!fichier) {
-		printf("❌ Erreur lors de la création du fichier de sauvegarde!\n");
+		printf("Erreur lors de la creation du fichier de sauvegarde!\n");
 		return;
 	}
-	// J'écris l'en-tête de sauvegarde
+	// J'ecris l'en-tete de sauvegarde
 	fprintf(fichier, "OCEANDEPTH_SAVE_V2\n");
 	// Je sauvegarde le joueur
 	if (sauvegarder_joueur(fichier, joueur) != 0) {
-		printf("❌ Erreur lors de la sauvegarde du joueur!\n");
+		printf("Erreur lors de la sauvegarde du joueur!\n");
 		fclose(fichier);
 		return;
 	}
-	// Je sauvegarde les créatures
+	// Je sauvegarde les creatures
 	if (creatures && creatures_save(fichier, creatures) != 0) {
-		printf("❌ Erreur lors de la sauvegarde des créatures!\n");
+		printf("Erreur lors de la sauvegarde des creatures!\n");
 		fclose(fichier);
 		return;
 	}
 	// Je sauvegarde la carte
 	if (sauvegarder_carte(fichier, carte) != 0) {
-		printf("❌ Erreur lors de la sauvegarde de la carte!\n");
+		printf("Erreur lors de la sauvegarde de la carte!\n");
 		fclose(fichier);
 		return;
 	}
@@ -49,7 +49,7 @@ void sauvegarder_partie_complete(CarteOceanique *carte, Plongeur *joueur, Creatu
 				obj->restaure_pv, obj->restaure_oxygene, obj->reduit_fatigue,
 				obj->attaque_min, obj->attaque_max, obj->defense, obj->cout_oxygene, obj->id);
 	}
-	// Je termine la sauvegarde de l'inventaire et des quêtes
+	// Je termine la sauvegarde de l'inventaire et des quetes
 	fprintf(fichier, "INVENTAIRE_END\n");
 	fprintf(fichier, "QUETES_START\n");
 	fprintf(fichier, "%d %d\n", quetes->quete_active, quetes->nb_quetes_terminees);
@@ -61,7 +61,7 @@ void sauvegarder_partie_complete(CarteOceanique *carte, Plongeur *joueur, Creatu
 	}
 	fprintf(fichier, "QUETES_END\n");
 	fclose(fichier);
-	printf("✅ Partie sauvegardée dans 'partie_oceandepth.save'!\n");
+	printf("Partie sauvegardee dans 'partie_oceandepth.save'!\n");
 }
 
 // Je charge toute la partie
@@ -69,38 +69,38 @@ int charger_partie_complete(CarteOceanique *carte, Plongeur *joueur, CreatureLis
 	// J'ouvre le fichier de sauvegarde en lecture
 	FILE *fichier = fopen("partie_oceandepth.save", "r");
 	if (!fichier) {
-		printf("❌ Aucune sauvegarde trouvée!\n");
+		printf("Aucune sauvegarde trouvee!\n");
 		return -1;
 	}
-	// Je lis la première ligne pour vérifier le format
+	// Je lis la premiere ligne pour verifier le format
 	char ligne[256];
-	if (!fgets(ligne, sizeof(ligne), fichier) || 
+	if (!fgets(ligne, sizeof(ligne), fichier) ||
 		(strncmp(ligne, "OCEANDEPTH_SAVE_V2", 18) != 0 && strncmp(ligne, "OCEANDEPTH_SAVE_V1", 18) != 0)) {
-		printf("❌ Format de sauvegarde incompatible!\n");
+		printf("Format de sauvegarde incompatible!\n");
 		fclose(fichier);
 		return -1;
 	}
 	// Je charge le joueur
 	if (charger_joueur(fichier, joueur) != 0) {
-		printf("❌ Erreur lors du chargement du joueur!\n");
+		printf("Erreur lors du chargement du joueur!\n");
 		fclose(fichier);
 		return -1;
 	}
-	// Je charge les créatures
+	// Je charge les creatures
 	if (creatures && creatures_load(fichier, creatures) != 0) {
-		printf("❌ Erreur lors du chargement des créatures!\n");
+		printf("Erreur lors du chargement des creatures!\n");
 		fclose(fichier);
 		return -1;
 	}
 	// Je charge la carte
 	if (charger_carte(fichier, carte) != 0) {
-		printf("❌ Erreur lors du chargement de la carte!\n");
+		printf("Erreur lors du chargement de la carte!\n");
 		fclose(fichier);
 		return -1;
 	}
-	// Je vérifie si c'est la version 2 de la sauvegarde
+	// Je verifie si c'est la version 2 de la sauvegarde
 	if (strncmp(ligne, "OCEANDEPTH_SAVE_V2", 18) == 0) {
-		// Je cherche le début de l'inventaire
+		// Je cherche le debut de l'inventaire
 		while (fgets(ligne, sizeof(ligne), fichier)) {
 			if (strncmp(ligne, "INVENTAIRE_START", 16) == 0) break;
 		}
@@ -114,29 +114,29 @@ int charger_partie_complete(CarteOceanique *carte, Plongeur *joueur, CreatureLis
 					   &obj->attaque_min, &obj->attaque_max, &obj->defense, &obj->cout_oxygene, &obj->id);
 			}
 		}
-		// Je cherche le début des quêtes
+		// Je cherche le debut des quetes
 		while (fgets(ligne, sizeof(ligne), fichier)) {
 			if (strncmp(ligne, "QUETES_START", 12) == 0) break;
 		}
-		// Je lis les quêtes
+		// Je lis les quetes
 		if (fscanf(fichier, "%d %d", &quetes->quete_active, &quetes->nb_quetes_terminees) == 2) {
 			for (int i = 0; i < NB_QUETES; i++) {
 				Quete *q = &quetes->quetes[i];
-				fscanf(fichier, "%d %d %d %d %d %d", 
+				fscanf(fichier, "%d %d %d %d %d %d",
 					   (int*)&q->type, (int*)&q->statut, &q->recompense_xp, &q->recompense_or,
 					   &q->objectif_actuel, &q->objectif_requis);
 			}
 			initialiser_quetes(quetes);
 		}
 	} else {
-	// Si c'est une ancienne sauvegarde, j'initialise l'inventaire et les quêtes
+	// Si c'est une ancienne sauvegarde, j'initialise l'inventaire et les quetes
 	initialiser_inventaire(inv);
 	initialiser_quetes(quetes);
 	}
-	// Je ferme le fichier et j'affiche un message de succès
+	// Je ferme le fichier et j'affiche un message de succes
 	fclose(fichier);
-	printf("✅ Partie chargée avec succès!\n");
-	// Je répare les zones débloquées
+	printf("Partie chargee avec succes!\n");
+	// Je repare les zones debloquees
 	for (int y = 0; y < TAILLE_CARTE; y++) {
 		for (int x = 0; x < TAILLE_CARTE; x++) {
 			if (carte->grille[y][x].exploree) {
@@ -144,7 +144,7 @@ int charger_partie_complete(CarteOceanique *carte, Plongeur *joueur, CreatureLis
 			}
 		}
 	}
-	printf("🔧 Réparation des zones débloquées terminée.\n");
+	printf("Reparation des zones debloquees terminee.\n");
 	return 0;
 }
 //
