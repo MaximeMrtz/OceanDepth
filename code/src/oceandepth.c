@@ -285,7 +285,7 @@ int main() {
                 getchar();
                 break;
             case 7:
-                ouvrir_inventaire(&inventaire);
+                ouvrir_inventaire(&inventaire, &joueur);  // <- AJOUTE &joueur
                 break;
             case 8:
                 printf("Sauvegarde... (fonction pas encore implementee)\n");

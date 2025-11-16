@@ -5,6 +5,7 @@
 
 // Inclusions du projet
 #include "inventaire.h"
+#include "joueur.h"
 
 typedef struct {
     char nom[24];
@@ -18,7 +19,7 @@ typedef struct {
     int bonus;
 } EquipementAffichage;
 
-// J'affiche l'inventaire avec des emojis et les effets
+// J'affiche l'inventaire
 void afficher_inventaire_avance(Inventaire *inv) {
     printf("\nINVENTAIRE SOUS-MARIN\n");
     printf("+----------------+----------------+----------------+\n");
@@ -35,15 +36,15 @@ void afficher_inventaire_avance(Inventaire *inv) {
     printf("Objets :\n");
     printf("+------------------------------+------------------------------+\n");
     for (int i = 0; i < MAX_OBJETS; i += 2) {
-    // J'affiche la premiere colonne
-        if (!inv->objets[i].est_vide) {
+        // J'affiche la premiere colonne
+        if (!inv->objets[i].est_vide && inv->objets[i].quantite > 0) {
             const char* type_icon = (inv->objets[i].type == TYPE_CONSOMMABLE ? "CONS" : (inv->objets[i].type == TYPE_EQUIPEMENT_HARPON ? "HARP" : (inv->objets[i].type == TYPE_EQUIPEMENT_COMBI ? "COMB" : "?")));
             printf("| [%d] %-12s x%-2d %-4s ", i+1, inv->objets[i].nom, inv->objets[i].quantite, type_icon);
         } else {
             printf("| [%d] %-25s ", i+1, "Vide");
         }
-    // J'affiche la deuxieme colonne
-        if (i+1 < MAX_OBJETS && !inv->objets[i+1].est_vide) {
+        // J'affiche la deuxieme colonne
+        if (i+1 < MAX_OBJETS && !inv->objets[i+1].est_vide && inv->objets[i+1].quantite > 0) {
             const char* type_icon = (inv->objets[i+1].type == TYPE_CONSOMMABLE ? "CONS" : (inv->objets[i+1].type == TYPE_EQUIPEMENT_HARPON ? "HARP" : (inv->objets[i+1].type == TYPE_EQUIPEMENT_COMBI ? "COMB" : "?")));
             printf("| [%d] %-12s x%-2d %-4s |\n", i+2, inv->objets[i+1].nom, inv->objets[i+1].quantite, type_icon);
         } else if (i+1 < MAX_OBJETS) {
@@ -190,7 +191,7 @@ int ajouter_objet(Inventaire *inv, Objet objet) {
 }
 
 // J'utilise un objet consommable
-int utiliser_objet(Inventaire *inv, int index) {
+int utiliser_objet(Inventaire *inv, int index, Plongeur *joueur) {
     if (index < 0 || index >= MAX_OBJETS) return 0;
     if (inv->objets[index].est_vide) return 0;
 
@@ -203,10 +204,39 @@ int utiliser_objet(Inventaire *inv, int index) {
 
     printf("Vous utilisez %s\n", obj->nom);
 
+    if (obj->restaure_pv > 0) {
+        joueur->points_de_vie += obj->restaure_pv;
+        if (joueur->points_de_vie > joueur->points_de_vie_max) {
+            joueur->points_de_vie = joueur->points_de_vie_max;
+        }
+        printf("+ %d PV ! (Total: %d/%d)\n", obj->restaure_pv,
+               joueur->points_de_vie, joueur->points_de_vie_max);
+    }
+
+    if (obj->restaure_oxygene > 0) {
+        joueur->niveau_oxygene += obj->restaure_oxygene;
+        if (joueur->niveau_oxygene > joueur->niveau_oxygene_max) {
+            joueur->niveau_oxygene = joueur->niveau_oxygene_max;
+        }
+        printf("+ %d O2 ! (Total: %d/%d)\n", obj->restaure_oxygene,
+               joueur->niveau_oxygene, joueur->niveau_oxygene_max);
+    }
+
+    if (obj->reduit_fatigue > 0) {
+        joueur->niveau_fatigue -= obj->reduit_fatigue;
+        if (joueur->niveau_fatigue < 0) {
+            joueur->niveau_fatigue = 0;
+        }
+        printf("- %d Fatigue ! (Total: %d)\n", obj->reduit_fatigue,
+               joueur->niveau_fatigue);
+    }
+
     obj->quantite--;
 
     if (obj->quantite <= 0) {
         obj->est_vide = 1;
+        strcpy(obj->nom, "");
+        obj->type = 0;
     }
 
     return 1;
@@ -314,18 +344,19 @@ Objet creer_combi_titanium() {
 }
 
 // Fonction pour ouvrir l'inventaire
-void ouvrir_inventaire(Inventaire *inv) {
+// Fonction pour ouvrir l'inventaire
+void ouvrir_inventaire(Inventaire *inv, Plongeur *joueur) {  // <- AJOUTE joueur
     int choix = 0;
     int continuer = 1;
     while (continuer) {
-    afficher_inventaire_avance(inv);
+        afficher_inventaire_avance(inv);
         printf("\nVotre choix: ");
         char buffer[16];
         if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
             printf("Entree invalide !\n");
             continue;
         }
-    // Je verifie la conversion
+        // Je verifie la conversion
         char *endptr = NULL;
         choix = (int)strtol(buffer, &endptr, 10);
         if (endptr == buffer || (*endptr != '\n' && *endptr != '\0')) {
@@ -341,7 +372,7 @@ void ouvrir_inventaire(Inventaire *inv) {
                     if (endptr2 == buffer || (*endptr2 != '\n' && *endptr2 != '\0')) {
                         printf("Veuillez entrer un nombre entre 1 et 8.\n");
                     } else if (index >= 1 && index <= 8) {
-                        utiliser_objet(inv, index - 1);
+                        utiliser_objet(inv, index - 1, joueur);  // <- AJOUTE joueur ICI
                         printf("\nAppuyez sur Entree pour continuer...");
                         fgets(buffer, sizeof(buffer), stdin);
                     } else {
@@ -353,7 +384,7 @@ void ouvrir_inventaire(Inventaire *inv) {
                 break;
             }
 
-            case 2: { // Equiper le harpon
+            case 2: {
                 printf("Quel harpon equiper (1-8)? ");
                 if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
                     char *endptr2 = NULL;

@@ -1,4 +1,3 @@
-// Déclaration anticipée pour usage croisé
 #ifndef INVENTAIRE_STRUCT_DECLARED
 #define INVENTAIRE_STRUCT_DECLARED
 typedef struct Inventaire Inventaire;
@@ -12,6 +11,9 @@ typedef struct Inventaire Inventaire;
 
 #define MAX_OBJETS 8
 #define MAX_NOM 30
+
+//Déclaration anticipée de Plongeur (pour lier joueur et inventaire)
+typedef struct Plongeur Plongeur;
 
 //Types objets
 typedef enum {
@@ -78,9 +80,10 @@ int ajouter_objet(Inventaire *inv, Objet objet);
  * @brief Utilise un objet de l'inventaire.
  * @param inv Pointeur vers l'inventaire
  * @param index Index de l'objet à utiliser
+ * @param joueur Pointeur vers le joueur pour appliquer les effets
  * @return 0 si succès, -1 sinon
  */
-int utiliser_objet(Inventaire *inv, int index);
+int utiliser_objet(Inventaire *inv, int index, Plongeur *joueur);
 
 /**
  * @brief Équipe un objet (harpon ou combinaison).
@@ -93,8 +96,9 @@ int equiper_objet(Inventaire *inv, int index);
 /**
  * @brief Ouvre le menu interactif d'inventaire.
  * @param inv Pointeur vers l'inventaire
+ * @param joueur Pointeur vers le joueur
  */
-void ouvrir_inventaire(Inventaire *inv);
+void ouvrir_inventaire(Inventaire *inv, Plongeur *joueur);  // <- MODIFIE CETTE LIGNE
 
 /**
  * @brief Crée une capsule d'oxygène.
@@ -144,10 +148,10 @@ Objet creer_combi_neoprene();
  */
 Objet creer_combi_titanium();
 
-#endif
-
 /**
  * @brief Libère la mémoire de l'inventaire (placeholder, rien à libérer actuellement).
  * @param inv Pointeur vers l'inventaire
  */
 void liberer_inventaire(Inventaire *inv);
+
+#endif

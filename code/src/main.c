@@ -223,7 +223,7 @@ void boucle_principale() {
                 break;
 
             case 5: // Inventaire
-                ouvrir_inventaire(&inventaire);
+                ouvrir_inventaire(&inventaire, &joueur);
                 break;
 
             case 6: // Quetes
