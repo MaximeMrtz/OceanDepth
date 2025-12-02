@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Filter Web</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        button { margin: 5px; }
+        #output { white-space: pre-wrap; background: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Data Filter Web Interface</h1>
+
+
+    <h3>Charger un fichier</h3>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <button type="submit">Charger CSV/JSON</button>
+    </form>
+    <form id="uploadXmlForm" enctype="multipart/form-data" style="display:inline;">
+        <input type="file" name="file">
+        <button type="submit">Charger XML</button>
+    </form>
+    <form id="uploadYamlForm" enctype="multipart/form-data" style="display:inline;">
+        <input type="file" name="file">
+        <button type="submit">Charger YAML</button>
+    </form>
+
+
+    <h3>Actions</h3>
+    <button onclick="getStats()">Afficher Stats</button>
+    <button onclick="undoFilter()">Annuler Filtrage (Undo)</button>
+    <button onclick="redoFilter()">Rétablir Filtrage (Redo)</button>
+    <button onclick="saveXml()">Sauvegarder XML</button>
+    <button onclick="saveYaml()">Sauvegarder YAML</button>
+
+    <h3>Filtrer</h3>
+    <select id="filterMode">
+        <option value="simple">Simple (>=)</option>
+        <option value="contains">Contient</option>
+        <option value="startswith">Commence par</option>
+        <option value="endswith">Finit par</option>
+        <option value="list_size">Taille liste</option>
+        <option value="list_avg">Moyenne liste</option>
+    </select>
+    <input id="filterKey" placeholder="Champ">
+    <input id="filterValue" placeholder="Valeur">
+    <button onclick="applyFilter()">Filtrer</button>
+
+    <h3>Trier</h3>
+    <select id="sortMode">
+        <option value="simple">Simple</option>
+        <option value="multi">Multi-critères</option>
+        <option value="value_global">Valeur globale</option>
+    </select>
+    <input id="sortKey" placeholder="Champ principal">
+    <input id="sortSecondary" placeholder="Champ secondaire (optionnel)">
+    <button onclick="applySort()">Trier</button>
+
+    <h3>Résultat</h3>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            let formData = new FormData(e.target);
+            let res = await fetch('/upload', { method: 'POST', body: formData });
+            document.getElementById('output').innerText = await res.text();
+        };
+
+        document.getElementById('uploadXmlForm').onsubmit = async (e) => {
+            e.preventDefault();
+            let formData = new FormData(e.target);
+            let res = await fetch('/upload_xml', { method: 'POST', body: formData });
+            document.getElementById('output').innerText = await res.text();
+        };
+
+        document.getElementById('uploadYamlForm').onsubmit = async (e) => {
+            e.preventDefault();
+            let formData = new FormData(e.target);
+            let res = await fetch('/upload_yaml', { method: 'POST', body: formData });
+            document.getElementById('output').innerText = await res.text();
+        };
+
+        async function getStats() {
+            let res = await fetch('/stats');
+            document.getElementById('output').innerText = await res.text();
+        }
+
+        async function applyFilter() {
+            let mode = document.getElementById('filterMode').value;
+            let key = document.getElementById('filterKey').value;
+            let value = document.getElementById('filterValue').value;
+            let res = await fetch(`/filter?mode=${mode}&key=${key}&value=${value}`);
+            document.getElementById('output').innerText = await res.text();
+        }
+
+        async function applySort() {
+            let mode = document.getElementById('sortMode').value;
+            let key = document.getElementById('sortKey').value;
+            let secondary = document.getElementById('sortSecondary').value;
+            let url = `/sort?mode=${mode}&key=${key}`;
+            if (secondary) url += `&secondary=${secondary}`;
+            let res = await fetch(url);
+            document.getElementById('output').innerText = await res.text();
+        }
+
+        async function undoFilter() {
+            let res = await fetch('/filter/undo', { method: 'POST' });
+            document.getElementById('output').innerText = await res.text();
+        }
+
+        async function redoFilter() {
+            let res = await fetch('/filter/redo', { method: 'POST' });
+            document.getElementById('output').innerText = await res.text();
+        }
+
+        async function saveXml() {
+            let res = await fetch('/save_xml', { method: 'POST' });
+            document.getElementById('output').innerText = await res.text();
+        }
+
+        async function saveYaml() {
+            let res = await fetch('/save_yaml', { method: 'POST' });
+            document.getElementById('output').innerText = await res.text();
+        }
+    </script>
+</body>
+</html>
